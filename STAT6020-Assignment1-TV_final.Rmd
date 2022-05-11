@@ -1,0 +1,251 @@
+---
+title: "STAT6020_PredictiveAnalytics_Assignment1"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+date: "19/08/2021"
+subtitle: Prepared by Tim Virga
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r,echo=FALSE}
+# Use these two lines to read the data and set the column names
+gy <- read.table("Yield.dat")
+names(gy) <- c("x", "y", "yield", "B", "Ca", "Cu", "Fe",
+"K", "Mg", "Mn", "Na", "P", "Zn")
+# create basic plot
+plot(I((y-1)*48.8)~I((x-1)*12.2), data=gy, xlab="east (metres)", type="n",
+ylab="north (metres)", xlim=c(-10,360), ylim=c(-10,360))
+# add grid lines
+abline(v=(1:28-1)*12.2, h=(1:8-1)*48.8, col="grey")
+# add secondary axes
+axis(side=3, at=(1:28-1)*12.2, labels=1:28, line=0, cex.axis=0.7, mgp=c(3,1,0))
+mtext("x", side=3, line=1, cex=0.7, adj=1)
+axis(side=4, at=(1:8-1)*48.8, labels=1:8, line=0, cex.axis=0.7, mgp=c(3,1,0))
+mtext("y", side=4, line=1, cex=0.7, adj=1)
+# plot the site locations
+points(I((y-1)*48.8)~I((x-1)*12.2), gy, pch=19)
+```
+\newpage
+
+# Preliminary exploration of the data
+
+```{r, echo=T, results='hide'}
+head(gy) # understanding what individual nutrients consist of the data set.
+summary(gy) # understanding the quartile spread of each nutrient
+pairs(gy) # Observing bivariate relationships at a glance  
+```
+\newpage
+```{r}
+par(mfrow=c(1,2))
+plot(yield~B, main="Yield vs B", data=gy)# standard scatter plot
+abline(lm(yield~B, data=gy), col="red")
+plot(log(yield)~log(B), main="Log Yield vs Log B", data=gy) # standard log scatter plot 
+abline(lm(log(yield)~log(B), data=gy), col="red")
+```
+
+\newpage
+
+Plotting the same data Yield~B with ggplot: 
+```{r, }
+library(ggplot2)   # using ggplot to produce the same plot
+ggplot(data=gy, mapping=aes(x=B, y=yield))+
+geom_point(col="red")+
+geom_smooth(method="lm", se=TRUE)
+```
+
+## 1. 
+
+### Comment 1
+
+Both the standard scatter plot and log scatter show that there is a relatively insignificant relationship between nutrient B and Yield, however, slightly positive. B would not form a high quality predictor of the response variable. 
+
+
+## *Analysis and comments on remaining nutrients*
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Ca, main="Yield vs Ca", data=gy)# standard scatter plot
+abline(lm(yield~Ca, data=gy), col="red")
+```
+
+### Comment 2
+
+The scatter plot of Yield~Ca shows that there is a relationship between nutrient Ca and Yield, although limited by data given only a small number of high Ca yields. Ca would likely form a considered predictor variable of the response variable. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Cu, main="Yield vs Cu", data=gy)# standard scatter plot
+abline(lm(yield~Cu, data=gy), col="red")
+```
+
+### Comment 3
+
+The scatter plot of Yield~Cu shows that there is a relatively significant linear relationship between nutrient Cu and Yield. We can observe a steady increase in yield for increased in the value of Cu. Cu would likely form an important predictor variable of the response variable. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Fe, main="Yield vs Fe", data=gy)# standard scatter plot
+abline(lm(yield~Fe, data=gy), col="red")
+```
+
+### Comment 4
+
+The standard scatter plot for Yield~Fe shows that there is a relatively insignificant relationship between nutrient Fe and yield, however, in dense areas of the plot there are clear suggestions of a linear relationship. Fe may present as a reasonable predictor of the response variable. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~K, main="Yield vs K", data=gy)# standard scatter plot
+abline(lm(yield~K, data=gy), col="red")
+```
+
+### Comment 5
+
+The scatter plot of Yield~K shows that there is a weak linear relationship between nutrient K and Yield. The strength of the relationship may not be strong as we observe a high density of data points within a short distance of eachother, mostly disorganised. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Mg, main="Yield vs Mg", data=gy)# standard scatter plot
+abline(lm(yield~Mg, data=gy), col="red")
+```
+
+### Comment 6
+
+The scatter plot of Yield~Mg shows that there is a linear relationship between nutrient Mg and Yield. Mg would likely form an important predictor variable of the response variable as we can see the higher values of Mg relating to some of the larger yields, and the lower values of Mg relating to some of the lowest yields. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Mn, main="Yield vs Mn", data=gy)# standard scatter plot
+abline(lm(yield~Mn, data=gy), col="red")
+```
+
+### Comment 7
+
+Almost identical in relation to Mg, The scatter plot abline of Yield~Mn shows that there is a similar relationship between nutrient Mn and Yield, although more variance in the data than Yield~Mg. Mn would likely form a considered predictor variable of the response variable.
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Na, main="Yield vs Na", data=gy)# standard scatter plot
+abline(lm(yield~Na, data=gy), col="red")
+```
+
+### Comment 8
+
+The standard scatter plot for Yield~Na shows that there is a relatively insignificant relationship between nutrient Na and yield, however, slightly positive. Na would not form a high quality predictor of the response variable. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~P, main="Yield vs P", data=gy)# standard scatter plot
+abline(lm(yield~P, data=gy), col="red")
+```
+
+### Comment 9
+
+The standard scatter plot for Yield~P shows that there is a relationship between nutrient P and Yield however, we observe a high density of data points in the low P and mid to high yield range which may result in P not representing an ideal predictor of the response variable. 
+
+```{r, echo=FALSE, out.height="50%", out.width="50%"}
+plot(yield~Zn, main="Yield vs Zn", data=gy)# standard scatter plot
+abline(lm(yield~Zn, data=gy), col="red")
+```
+
+### Comment 10
+
+The standard scatter plot for Yield~Zn shows a strong linear relationship between nutrient Zn and Yield. There is a consistent theme of increase Yield for an increase in Zn. Zn would form a high quality predictor of the response variable. 
+head(gy)
+
+\newpage
+
+# Multiple Linear Regression 
+
+```{r}
+gy.lm = lm(yield~B+Ca+Cu+Fe+K+Mg+Mn+Na+P+Zn, data=gy)
+plot(gy.lm, which=1)
+summary(gy.lm)
+```
+
+## 2. 
+We can observe in a standard lm for Yield with all nutrients that there are 2 predictor variables Cu & Fe that share a low P statistic value (P=<.10 as per significance level guidance), implying evidence against the $H_0$ hypothesis. We can therefore investigate the significance of the relationship between the highlight predictor variables and the response variable. 
+
+## 3. 
+
+One method of filtering out observations from a data frame is to exclude a concatenation of the row.  
+
+```{r}
+gy2 = gy[-c(200,0),] # excludes observation 200
+print(gy2[c(200,0),]) # prints observations 200 which should now be gone from the df
+```
+```{r}
+gy.lm3 = lm(log(yield)~log(B)+Ca+Cu+Fe+K+Mg+Mn+Na+P+Zn, data=gy2)
+plot(gy.lm3, which=1)
+summary(gy.lm3)
+```
+By removing the outlier observation 200 we observe a slight increase in $R^2$ statistic and lower P values for almost all variables, further supporting our findings on the previous model with a greater degree of confidence. The scale of the residuals axis has been adjusted and presents a better lm fit, therefore making the change reasonable.  
+
+
+## 4.
+```{r}
+gy.loglm = lm(yield~B+I(1/Ca)+log(Cu)+log(Fe)+I(1/K)+I(1/Mg)+log(Mn)+Na+log(P)+log(Zn+1), data=gy2)
+summary(gy.loglm)
+plot(gy.loglm,which=1)
+```
+By transforming some of the predictor variables with log and standardization, we observe a significant increase in the $R^2$ statistic, suggesting an improved model fit accounting for more variance than previous models. With variable transformations there are caveats, such as the problem of multicollinearity due to similarities in the predictor variable data relationships. Regardless, our transformations have resulted in surfacing relationships across a number of variables with a P = <.10 significance level: Ca, Cu, K, Mg and P. This aligns well with earlier speculation on what variables would form good predictors by analysing the bivariate relationships.
+
+# Subset Selection
+
+## 5. 
+
+```{r, echo=FALSE}
+library(leaps)
+```
+
+```{r}
+gy2.fsstest= regsubsets(yield~B+I(1/Ca)+log(Cu)+log(Fe)+I(1/K)+I(1/Mg)+log(Mn)+Na+log(P)+log(Zn+1), 
+                        data=gy2, method="forward")
+summary(gy2.fsstest)
+plot(gy2.fsstest, scale="adjr2")
+```
+Noting from our previous observations of the transformed variables lm: Ca, Cu, K, Mg and P all exhibited a relationship with the response variable. We see this echoed again during our forward subset selection approach by observing the summary and plot (adjr2) for our variables. Across the evaluation of our predictor variables at each quantity of the # of variables, the most relational variables in order of confidence are: Cu, K, P, Mg and Ca. Our Forward step selection algorithm advises that the next most significant variable in a 6 step calculation would be Zn however, Zn does not meet our $R^2$ statistic requirements of P=<.10 and therefore may be considered for exclusion in fitting our model for concerns of over-fitting the model to training data. 
+
+# Model Regularisation 
+
+## 6. 
+
+```{r}
+library(glmnet)
+X = model.matrix(gy.loglm)[,-1]
+Y = log(gy2$yield)
+lasso.gy = glmnet(X, Y, alpha=1)
+plot(lasso.gy, label=TRUE)
+```
+Here we have implemented LASSO regression, which utilises L1 norm for regularisation aka the sum of the coefficients absolute values. The LASSO method uses $\lambda$ value increases as a penalty function to regularize the coefficients. The plot is interpreted from right to left where each of the lines represents a variable converging toward the MSE = 0 which eventually reduces to the RSS. We observe the LASSO method performing a degree of subset selection by noting the drop in variables from 10 to 9 to 0 as we converge on MSE = 0. 
+
+## 7. 
+
+```{r}
+library(glmnet)
+cv_lasso.gy = cv.glmnet(X, Y, alpha=1) #cross-validation for lasso
+plot(cv_lasso.gy)
+```
+We interpret this plot from left to right, with the MSE scaled on the Y axis and $log(\lambda)$ on the X axis. Note the Y scale starting at MSE = 0 and increases in value as the value of lambda increases; adding to bias. We observe the cross-validation model reducing the number of variables at a cost to the estimated standard error denoted by the vertical interval lines extending out from each red point. The leftmost dotted vertical line represents the model with the least amount of estimated MSE. The right-most dotted vertical line indicates to us the tradeoff we can consider where the model's estimated MSE is 1 standard error from the most accurate standard error model (left-most line). As the model increases in $\lambda$ it performs subset selection with only a reasonable increase in MSE. To identify the lambda value as recommended by our cv model, we can perform the 1se command, log transformed: 
+
+```{r}
+cv_lasso.gy$lambda.1se # cross validation lasso model standard error
+log(cv_lasso.gy$lambda.1se)
+```
+-3.8 to -3.5 $log(\lambda)$ would offer a reasonable trade-off resulting in a more simplistic model at the cost of only a slight increase in estimated MSE. A range has been provided here as with each execution of this code, a different set of data is selected for the calculation, therefore producing slightly different results. 
+
+Our coefficients for the model are as follows: 
+
+```{r}
+coef(cv_lasso.gy) # cross-validation lasso coefficients 
+```
+We observe these 4 coefficients (excl intercept) log(Cu), I(1/K), log(P) and log(Zn+1) as the selection performed by the cv model representing the most promising coefficients to consider in a trade off that reduces the complexity of the model at only a slight increase to estimated MSE. 
+
+## 8. 
+
+```{r}
+head(gy2) # check column names
+gy3 = subset(gy2, select= c("yield", "Cu", "K", "P", "Zn")) # select subset of variables
+gy3.lm = lm(yield~log(Cu)+I(1/K)+log(P)+log(Zn+1), data=gy3) # transform as per previous item 
+plot(gy3.lm, which=1)
+```
+The variable coefficients supplied by the cv model were almost identical to those identified in the fss model, with the main difference being that the cv model suggested nutrient Zn over Ca and Mg which were more highly regarded in the fss model. 
+
+Recalling in the earlier log scatter plot analyses the respective P statistic for Zn was close to the P=<.10 significance level, but not quite there- the difference between Zn, Mg and Ca was relatively negligible- this was also observed in the adjr2 plot. The reason for the difference in coefficient suggestions here from cv models is a combination of the limitations of the fss model design and multicollinearity. The fss model is only evaluating a limited number of parameters through each 'step' iteration without an indepth consideration for error. The cv model was able to evaluate all predictors across MSE = 0 up to a reasonable tradeoff MSE of 1se inclusive of the lambda penalty to suggest a more accurate model, with more consideration for error. 
